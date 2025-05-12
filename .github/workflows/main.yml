@@ -1,4 +1,4 @@
-name: Build macOS Executable with PyInstaller
+name: Build macOS and Windows Executables
 
 on:
   push:
@@ -8,32 +8,56 @@ on:
   workflow_dispatch:
 
 jobs:
-  build:
+  build-macos:
     runs-on: macos-latest
-
     steps:
-    - name: Checkout repository
-      uses: actions/checkout@v3
+      - name: Checkout repo
+        uses: actions/checkout@v3
 
-    - name: Set up Python
-      uses: actions/setup-python@v5
-      with:
-        python-version: '3.11'
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
 
-    - name: Install dependencies
-      run: |
-        python -m pip install --upgrade pip setuptools wheel pyinstaller
-        # Add any other packages your script uses:
-        python -m pip install soundfile pandas mutagen
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip pyinstaller soundfile pandas mutagen
 
-    - name: Build executable with PyInstaller
-      run: |
-        pyinstaller --onefile --icon=gate.ico your_script.py
-        mkdir packaged
-        mv dist/your_script packaged/
+      - name: Build macOS app
+        run: |
+          pyinstaller --onefile GateKeeper.py
+          mkdir packaged
+          mv dist/your_script packaged/your_script_macos
 
-    - name: Upload executable
-      uses: actions/upload-artifact@v3
-      with:
-        name: macOS-executable
-        path: packaged/your_script
+      - name: Upload macOS binary
+        uses: actions/upload-artifact@v3
+        with:
+          name: your_script_macos
+          path: packaged/your_script_macos
+
+  build-windows:
+    runs-on: windows-latest
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip pyinstaller soundfile pandas mutagen
+
+      - name: Build Windows exe
+        run: |
+          pyinstaller --onefile GateKeeper.py
+          mkdir packaged
+          move dist\your_script.exe packaged\your_script_windows.exe
+
+      - name: Upload Windows .exe
+        uses: actions/upload-artifact@v3
+        with:
+          name: your_script_windows
+          path: packaged/your_script_windows.exe

@@ -6,8 +6,8 @@ import csv
 from mutagen import File
 
 # === CONFIG ===
-print(r"Folder path example for Windows:\nC:\\Users\\nlobo\\Music\\Uber Voice\n")
-print(r"Folder path example for MacOS:\n/Users/<your_username>/Uber_Voice\n")
+print(r"Folder path example for Windows: C:\Users\nlobo\Music\Uber Voice")
+print(r"Folder path example for MacOS: /Users/<your_username>/Uber_Voice")
 folder_path = input("Enter the full folder path: ").strip()
 folder_path = os.path.abspath(os.path.expanduser(folder_path))
 output_folder = os.path.join(folder_path, "to_upload")

@@ -27,7 +27,7 @@ for filename in os.listdir(folder_path):
         input_path = os.path.join(folder_path, filename)
         output_path = os.path.join(output_folder, f"normalized_{filename}")
 
-        print(f"🔄 Normalizing: {filename}")
+        print(f"🎛️ Normalizing: {filename}")
 
         # Normalize audio with ffmpeg
         try:

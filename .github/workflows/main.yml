@@ -65,29 +65,42 @@ jobs:
         with:
           name: GateKeeper
           path: packaged/GateKeeper.exe
-  
   release:
     name: Create GitHub Release
     needs: [build-macos, build-windows]
     runs-on: ubuntu-latest
     steps:
-      - name: Download macOS binary
-        uses: actions/download-artifact@v4
-        with:
-          name: GateKeeper_macos
-          path: ./release
+    - name: Checkout repository
+      uses: actions/checkout@v4
 
-      - name: Download Windows executable
-        uses: actions/download-artifact@v4
-        with:
-          name: GateKeeper
-          path: ./release
+    - name: Download macOS binary
+      uses: actions/download-artifact@v4
+      with:
+        name: GateKeeper_macos
+        path: ./release
 
-      - name: Create GitHub Release
-        uses: softprops/action-gh-release@v2
-        with:
-          files: |
-            release/GateKeeper_macos
-            release/GateKeeper.exe
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    - name: Download Windows executable
+      uses: actions/download-artifact@v4
+      with:
+        name: GateKeeper
+        path: ./release
+
+    - name: Create tag
+      id: tag_step
+      run: |
+        TAG_NAME="auto-v$(date +'%Y%m%d%H%M%S')"
+        echo "tag=$TAG_NAME" >> $GITHUB_OUTPUT
+        git config user.name "${{ github.actor }}"
+        git config user.email "${{ github.actor }}@users.noreply.github.com"
+        git tag $TAG_NAME
+        git push origin $TAG_NAME
+
+    - name: Create GitHub Release
+      uses: softprops/action-gh-release@v2
+      with:
+        tag_name: ${{ steps.tag_step.outputs.tag }}
+        files: |
+          release/GateKeeper_macos
+          release/GateKeeper.exe
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

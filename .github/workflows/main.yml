@@ -65,3 +65,29 @@ jobs:
         with:
           name: GateKeeper
           path: packaged/GateKeeper.exe
+  
+  release:
+    name: Create GitHub Release
+    needs: [build-macos, build-windows]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download macOS binary
+        uses: actions/download-artifact@v4
+        with:
+          name: GateKeeper_macos
+          path: ./release
+
+      - name: Download Windows executable
+        uses: actions/download-artifact@v4
+        with:
+          name: GateKeeper
+          path: ./release
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            release/GateKeeper_macos
+            release/GateKeeper.exe
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
